@@ -180,11 +180,11 @@ export default function ExchangeHome() {
                         <tr className="bg-slate-950/90 sticky top-10 z-10 border-b border-t border-slate-800 shadow-sm">
                           <td colSpan={7} className="px-4 py-2 font-bold text-blue-400 text-xs uppercase tracking-widest">{sector}</td>
                         </tr>
-                        {groupedStocks[sector].map(s => renderRow(s))}
+                        {groupedStocks[sector].map((s: any) => renderRow(s))}
                       </Fragment>
                     ))
                   ) : (
-                    !loading && processedList.map(s => renderRow(s))
+                    !loading && processedList.map((s: any) => renderRow(s))
                   )}
                 </tbody>
               </table>
