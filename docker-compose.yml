@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: investment_autopilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  ai-service:
+    build: 
+      context: ./ai-services
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./ai-services/app:/app/app
+    environment:
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3001:3000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgrespassword
+      - DB_NAME=investment_autopilot
+      - AI_SERVICE_URL=http://ai-service:8000
+    depends_on:
+      db:
+        condition: service_healthy
+      ai-service:
+        condition: service_started
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001
+      - NEXT_PUBLIC_AI_URL=http://localhost:8000
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
