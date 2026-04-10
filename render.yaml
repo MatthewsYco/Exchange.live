@@ -1,0 +1,24 @@
+services:
+  # Next.js Frontend
+  - type: web
+    name: investment-autopilot-frontend
+    env: docker
+    rootDir: frontend
+    plan: free
+    autoDeploy: true
+
+  # NestJS Backend
+  - type: web
+    name: investment-autopilot-backend
+    env: docker
+    rootDir: backend
+    plan: free
+    autoDeploy: true
+
+  # FastAPI AI Services
+  - type: web
+    name: investment-autopilot-ai
+    env: docker
+    rootDir: ai-services
+    plan: free
+    autoDeploy: true
